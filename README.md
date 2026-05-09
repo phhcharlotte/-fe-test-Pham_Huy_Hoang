@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# TaskBoard 📋
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ứng dụng quản lý công việc nội bộ, xây dựng với React 18 + TypeScript + Redux Toolkit + Tailwind CSS + Vite.
 
-Currently, two official plugins are available:
+## Công nghệ sử dụng
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Tech          | Version    | Mục đích         |
+| ------------- | ---------- | ---------------- |
+| React         | 18         | UI framework     |
+| TypeScript    | 5 (strict) | Type safety      |
+| Redux Toolkit | 2.x        | State management |
+| Tailwind CSS  | 3.x        | Styling          |
+| Vite          | latest     | Build tool       |
 
-## React Compiler
+## Cài đặt và chạy
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Mở trình duyệt tại `http://localhost:5173`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Cấu trúc thư mục
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── types/          # TypeScript interfaces (Task, TaskFilters, ...)
+├── data/           # Mock data (22 tasks mẫu, danh sách users)
+├── store/          # Redux store
+│   ├── index.ts    # configureStore
+│   └── tasksSlice.ts  # slice + createSelector selectors
+├── hooks/          # Custom hooks
+│   ├── redux.ts    # useAppDispatch, useAppSelector
+│   └── useDebounce.ts
+├── utils/          # Helper functions
+│   └── helpers.ts  # genId, formatDate, daysDiff, avatar utils
+├── components/     # Shared components
+│   ├── ui.tsx      # StatusBadge, PriorityBadge, Avatar, MultiSelect, TagInput, SortIcon
+│   ├── TaskModal.tsx
+│   ├── ConfirmModal.tsx
+│   └── Notification.tsx
+├── pages/          # Pages
+│   ├── Dashboard.tsx
+│   ├── TaskList.tsx
+├── App.tsx         # Root layout + sidebar + routing
+├── main.tsx        # Entry point
+└── index.css       # Tailwind base
+```
+
+## Redux State Shape
+
+```ts
+{
+  tasks: {
+    items: Task[],          // 22 mock tasks
+    filters: {
+      searchText: string,   // debounce 300ms
+      status: TaskStatus[], // multi-select
+      priority: string,
+      dateRange: [string, string]
+    },
+    pagination: {
+      currentPage: number,
+      pageSize: 10
+    },
+    sortConfig: {
+      key: keyof Task,
+      dir: 'asc' | 'desc'
+    }
+  }
+}
+```
+
+## Selectors (createSelector)
+
+- `selectAllTasks` — toàn bộ task
+- `selectFilteredTasks` — áp dụng filters + sort
+- `selectPaginatedTasks` — task của trang hiện tại
+- `selectTaskStats` — { total, todo, inProgress, done, highPriority, overdue }
+- `selectRecentTasks` — 5 task mới nhất
+- `selectKanbanTasks` — nhóm theo status
+
+## Actions
+
+`addTask` · `updateTask` · `deleteTask` · `deleteManyTasks` · `updateTaskStatus` · `setFilter` · `resetFilters` · `setPage` · `setSortConfig`
+
+## Tính năng
+
+- **Dashboard**: 4 stat cards, donut chart, recent tasks, biểu đồ ưu tiên, task theo thành viên
+- **Danh sách task**: table phân trang, sort 3 cột, inline status change, bulk delete
+- **Tìm kiếm & lọc**: debounce search, multi-select status, filter priority, date range picker
+- **CRUD**: Modal thêm/sửa với validation, confirm trước khi xóa
+- **Toast notifications**: phản hồi mọi thao tác
