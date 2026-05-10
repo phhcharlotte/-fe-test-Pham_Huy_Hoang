@@ -5,6 +5,7 @@ import { store } from "./stores";
 import { NotificationProvider } from "./components/Notification";
 import { DarkModeProvider } from "./context/DarkModeContext";
 import App from "./App";
+import "antd/dist/reset.css";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

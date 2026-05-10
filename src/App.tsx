@@ -31,8 +31,7 @@ import type { Task } from "./types";
 
 const { Sider, Header, Content } = Layout;
 
-type Page = "dashboard" | "tasks" | "kanban";
-type ViewMode = "list" | "kanban";
+type Page = "dashboard" | "tasks";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -41,7 +40,6 @@ export default function App() {
   const stats = useAppSelector(selectTaskStats);
 
   const [page, setPage] = useState<Page>("dashboard");
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [showAddModal, setShowAddModal] = useState(false);
 
   // Persist filters vào URL query params (2 chiều)
@@ -53,12 +51,11 @@ export default function App() {
     notify("✨ Đã tạo task mới");
   };
 
-  const showAddBtn = page === "tasks" || page === "kanban";
+  const showAddBtn = page === "tasks";
 
   const pageTitles: Record<Page, string> = {
-    dashboard: "📊 Dashboard",
-    tasks: "📋 Danh sách Task",
-    kanban: "🗂️ Kanban Board",
+    dashboard: " Dashboard",
+    tasks: " Danh sách Task",
   };
 
   const menuItems = [
@@ -163,11 +160,11 @@ export default function App() {
             </div>
             {(
               [
-                ["⏳ Chờ xử lý", stats.todo, "#e5e7eb"],
-                ["🔄 Đang làm", stats.inProgress, "#93c5fd"],
-                ["✅ Hoàn thành", stats.done, "#86efac"],
+                [" Chờ xử lý", stats.todo, "#e5e7eb"],
+                ["Đang làm", stats.inProgress, "#93c5fd"],
+                ["Hoàn thành", stats.done, "#86efac"],
                 ...(stats.overdue > 0
-                  ? [["⚠️ Quá hạn", stats.overdue, "#fca5a5"]]
+                  ? [[" Quá hạn", stats.overdue, "#fca5a5"]]
                   : []),
               ] as [string, number, string][]
             ).map(([label, value, color]) => (
@@ -207,48 +204,6 @@ export default function App() {
             </h1>
 
             <div className="flex items-center gap-2">
-              {/* View toggle (List / Kanban) */}
-              {page === "tasks" && (
-                <div
-                  className="flex gap-1 rounded-lg p-1"
-                  style={{ background: isDark ? "#252840" : "#f3f4f6" }}>
-                  {(["list", "kanban"] as ViewMode[]).map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => setViewMode(v)}
-                      style={{
-                        background:
-                          viewMode === v
-                            ? isDark
-                              ? "#3d4266"
-                              : "#ffffff"
-                            : "transparent",
-                        color:
-                          viewMode === v
-                            ? "#6366f1"
-                            : isDark
-                              ? "#9ca3af"
-                              : "#9ca3af",
-                        boxShadow:
-                          viewMode === v
-                            ? "0 1px 3px rgba(0,0,0,0.15)"
-                            : "none",
-                      }}
-                      className="px-2.5 py-1 rounded-md text-xs font-semibold transition-all flex items-center gap-1">
-                      {v === "list" ? (
-                        <>
-                          <BarsOutlined /> List
-                        </>
-                      ) : (
-                        <>
-                          <TableOutlined /> Kanban
-                        </>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {/* Dark mode toggle */}
               <Tooltip
                 title={

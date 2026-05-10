@@ -37,7 +37,6 @@ import { useNotify } from "../components/Notification";
 import { formatDate, daysDiff } from "../utils/helpers";
 import {
   SearchOutlined,
-  PlusOutlined,
   DeleteOutlined,
   EditOutlined,
   ReloadOutlined,
@@ -65,19 +64,13 @@ export default function TaskList() {
     dispatch(setFilter({ searchText: debouncedSearch }));
   }, [debouncedSearch, dispatch]);
 
-  // paginate client-side via antd Table
-  const paginatedData = useMemo(() => {
-    const start = (pagination.currentPage - 1) * pagination.pageSize;
-    return filteredTasks.slice(start, start + pagination.pageSize);
-  }, [filteredTasks, pagination]);
-
   const handleSave = (task: Task) => {
     if (modal === "new") {
       dispatch(addTask(task));
-      notify("✨ Đã tạo task mới");
+      notify(" Đã tạo task mới");
     } else {
       dispatch(updateTask(task));
-      notify("💾 Đã cập nhật task");
+      notify(" Đã cập nhật task");
     }
     setModal(null);
   };
@@ -194,9 +187,9 @@ export default function TaskList() {
               className={`text-xs font-semibold ${isOverdue ? "text-red-500" : isDueSoon ? "text-yellow-500" : "text-gray-600"}`}>
               {formatDate(dueDate)}
             </div>
-            {isOverdue && (
+            {/* {isOverdue && (
               <div className="text-xs text-red-400">Trễ {-diff!} ngày</div>
-            )}
+            )} */}
             {isDueSoon && !isOverdue && (
               <div className="text-xs text-yellow-400">
                 {diff === 0 ? "Hôm nay" : `Còn ${diff} ngày`}
@@ -205,26 +198,6 @@ export default function TaskList() {
           </div>
         );
       },
-    },
-    {
-      title: "Tags",
-      dataIndex: "tags",
-      key: "tags",
-      width: 150,
-      render: (tags?: string[]) => (
-        <div className="flex flex-wrap gap-1">
-          {(tags ?? []).slice(0, 2).map((t) => (
-            <Tag key={t} color="purple" style={{ fontSize: 10, margin: 0 }}>
-              {t}
-            </Tag>
-          ))}
-          {(tags ?? []).length > 2 && (
-            <Text type="secondary" style={{ fontSize: 11 }}>
-              +{tags!.length - 2}
-            </Text>
-          )}
-        </div>
-      ),
     },
     {
       title: "Thao tác",
@@ -287,9 +260,9 @@ export default function TaskList() {
           onChange={(v) => dispatch(setFilter({ status: v }))}
           style={{ minWidth: 160 }}
           options={[
-            { value: "todo", label: "⏳ Chờ xử lý" },
-            { value: "in_progress", label: "🔄 Đang làm" },
-            { value: "done", label: "✅ Hoàn thành" },
+            { value: "todo", label: " Chờ xử lý" },
+            { value: "in_progress", label: " Đang làm" },
+            { value: "done", label: " Hoàn thành" },
           ]}
           allowClear
         />
@@ -301,9 +274,9 @@ export default function TaskList() {
           allowClear
           style={{ width: 150 }}
           options={[
-            { value: "high", label: "🔴 Cao" },
-            { value: "medium", label: "🟡 Trung bình" },
-            { value: "low", label: "🟢 Thấp" },
+            { value: "high", label: " Cao" },
+            { value: "medium", label: " Trung bình" },
+            { value: "low", label: " Thấp" },
           ]}
         />
 

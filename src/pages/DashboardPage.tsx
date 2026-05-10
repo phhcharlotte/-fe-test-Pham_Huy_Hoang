@@ -6,7 +6,7 @@ import { StatusBadge, PriorityBadge } from "../components/ui";
 
 function Dashboard() {
   const stats = useAppSelector(selectTaskStats);
-  const recent = useAppSelector(selectRecentTasks);
+  const recents = useAppSelector(selectRecentTasks);
   const { Text } = Typography;
   const statCards = [
     {
@@ -82,34 +82,34 @@ function Dashboard() {
             title={<span className="font-bold"> 5 task tạo gần nhất</span>}
             className="h-full">
             <div className="space-y-3">
-              {recent.map((t, i) => {
+              {recents.map((recent, index) => {
                 return (
                   <div
-                    key={t.id}
-                    className={`flex items-start gap-2.5 ${i < recent.length - 1 ? "pb-3 border-b border-gray-50" : ""}`}>
+                    key={recent.id}
+                    className={`flex items-start gap-2.5 ${index < recents.length - 1 ? "pb-3 border-b border-gray-50" : ""}`}>
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center text-sm flex-shrink-0 mt-0.5"
                       style={{
                         background:
-                          t.status === "done"
+                          recent.status === "done"
                             ? "#f6ffed"
-                            : t.status === "in_progress"
+                            : recent.status === "in_progress"
                               ? "#e6f4ff"
                               : "#f5f5f5",
                       }}>
-                      {t.status === "done"
+                      {recent.status === "done"
                         ? "✅"
-                        : t.status === "in_progress"
+                        : recent.status === "in_progress"
                           ? "🔄"
                           : "⏳"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-gray-900 truncate mb-1">
-                        {t.title}
+                        {recent.title}
                       </p>
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <StatusBadge status={t.status} />
-                        <PriorityBadge priority={t.priority} />
+                        <StatusBadge status={recent.status} />
+                        <PriorityBadge priority={recent.priority} />
                       </div>
                     </div>
                   </div>

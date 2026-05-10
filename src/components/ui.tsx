@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Tag, Select, Avatar as AntAvatar } from "antd";
-import type { Task, TaskStatus, TaskPriority, SortConfig } from "../types";
-import { avatarInitials, avatarColor } from "../utils/helpers";
+import { Tag, Select } from "antd";
+import type { TaskStatus, TaskPriority } from "../types";
 import { TAGS_POOL } from "../data/mockData";
 
 const statusMap: Record<TaskStatus, { color: string; label: string }> = {
@@ -49,40 +48,6 @@ const priorityMap: Record<TaskPriority, { color: string; label: string }> = {
 export function PriorityBadge({ priority }: { priority: TaskPriority }) {
   const { color, label } = priorityMap[priority];
   return <Tag color={color}>{label}</Tag>;
-}
-
-export function SortIcon({
-  field,
-  config,
-}: {
-  field: string;
-  config: SortConfig;
-}) {
-  const active = config.key === field;
-  return (
-    <span className="inline-flex flex-col gap-px ml-1 align-middle">
-      <span
-        style={{
-          display: "block",
-          width: 0,
-          height: 0,
-          borderLeft: "4px solid transparent",
-          borderRight: "4px solid transparent",
-          borderBottom: `4px solid ${active && config.dir === "asc" ? "#6366f1" : "#d1d5db"}`,
-        }}
-      />
-      <span
-        style={{
-          display: "block",
-          width: 0,
-          height: 0,
-          borderLeft: "4px solid transparent",
-          borderRight: "4px solid transparent",
-          borderTop: `4px solid ${active && config.dir === "desc" ? "#6366f1" : "#d1d5db"}`,
-        }}
-      />
-    </span>
-  );
 }
 
 export function TagInput({
