@@ -31,7 +31,7 @@ import {
   setPage,
   setSortConfig,
 } from "../stores/TaskSlice";
-import { StatusBadge, PriorityBadge, Avatar } from "../components/ui";
+import { StatusBadge, PriorityBadge } from "../components/ui";
 import { TaskModal } from "../components/TaskModal";
 import { useNotify } from "../components/Notification";
 import { formatDate, daysDiff } from "../utils/helpers";
@@ -161,7 +161,6 @@ export default function TaskList() {
       render: (assignee?: string) =>
         assignee ? (
           <div className="flex items-center gap-2">
-            <Avatar name={assignee} size={22} />
             <span className="text-xs text-gray-600">
               {assignee.split(" ").slice(-2).join(" ")}
             </span>

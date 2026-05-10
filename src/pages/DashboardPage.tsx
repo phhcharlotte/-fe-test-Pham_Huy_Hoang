@@ -1,10 +1,8 @@
 import React from "react";
 import { useAppSelector } from "../hooks/redux";
-import { Card, Statistic, Progress, Alert, Row, Col, Typography } from "antd";
+import { Card, Statistic, Alert, Row, Col, Typography } from "antd";
 import { selectTaskStats, selectRecentTasks } from "../stores/TaskSlice";
-import { StatusBadge, PriorityBadge, Avatar } from "../components/ui";
-import { formatDate, daysDiff } from "../utils/helpers";
-import { MOCK_TASKS, USERS } from "../data/mockData";
+import { StatusBadge, PriorityBadge } from "../components/ui";
 
 function Dashboard() {
   const stats = useAppSelector(selectTaskStats);
@@ -47,7 +45,7 @@ function Dashboard() {
         <Alert
           type="error"
           showIcon
-          message={`${stats.overdue} task đã quá hạn! Cần xử lý ngay.`}
+          description={`${stats.overdue} task đã quá hạn! Cần xử lý ngay.`}
           className="rounded-xl"
         />
       )}
@@ -66,7 +64,7 @@ function Dashboard() {
               <Statistic
                 title={s.label}
                 value={s.value}
-                valueStyle={{ color: s.color, fontSize: 28, fontWeight: 800 }}
+                style={{ color: s.color, fontSize: 28, fontWeight: 800 }}
               />
               <Text className="text-xs text-gray-400">
                 {stats.total
@@ -112,7 +110,6 @@ function Dashboard() {
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <StatusBadge status={t.status} />
                         <PriorityBadge priority={t.priority} />
-                        {t.assignee && <Avatar name={t.assignee} size={18} />}
                       </div>
                     </div>
                   </div>

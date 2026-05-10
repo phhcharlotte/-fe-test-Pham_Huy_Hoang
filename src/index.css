@@ -25,6 +25,139 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #9ca3af;
   }
+
+  /* Dark mode: Ant Design component overrides */
+  .dark .ant-card {
+    background: #1e2130 !important;
+    border-color: #2d3148 !important;
+  }
+  .dark .ant-card-head {
+    background: #1e2130 !important;
+    border-color: #2d3148 !important;
+    color: #e5e7eb !important;
+  }
+  .dark .ant-card-body {
+    color: #d1d5db !important;
+  }
+  .dark .ant-table {
+    background: #1e2130 !important;
+    color: #d1d5db !important;
+  }
+  .dark .ant-table-thead > tr > th {
+    background: #161827 !important;
+    color: #9ca3af !important;
+    border-color: #2d3148 !important;
+  }
+  .dark .ant-table-tbody > tr > td {
+    border-color: #2d3148 !important;
+  }
+  .dark .ant-table-tbody > tr:hover > td {
+    background: #252840 !important;
+  }
+  .dark .ant-table-tbody > tr > td {
+    background: #1e2130 !important;
+  }
+  .dark .ant-input,
+  .dark .ant-input-affix-wrapper {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+    color: #e5e7eb !important;
+  }
+  .dark .ant-select-selector {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+    color: #e5e7eb !important;
+  }
+  .dark .ant-picker {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+    color: #e5e7eb !important;
+  }
+  .dark .ant-picker-input > input {
+    color: #e5e7eb !important;
+  }
+  .dark .ant-btn-default {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+    color: #d1d5db !important;
+  }
+  .dark .ant-statistic-title {
+    color: #9ca3af !important;
+  }
+  .dark .ant-statistic-content {
+    color: #e5e7eb !important;
+  }
+  .dark .ant-alert {
+    background: #3b1f1f !important;
+    border-color: #7f2020 !important;
+  }
+  .dark .ant-empty-description {
+    color: #6b7280 !important;
+  }
+  .dark .ant-modal-content {
+    background: #1e2130 !important;
+  }
+  .dark .ant-modal-header {
+    background: #1e2130 !important;
+    border-color: #2d3148 !important;
+  }
+  .dark .ant-modal-title {
+    color: #e5e7eb !important;
+  }
+  .dark .ant-form-item-label > label {
+    color: #9ca3af !important;
+  }
+  .dark .ant-select-dropdown {
+    background: #252840 !important;
+  }
+  .dark .ant-select-item {
+    color: #d1d5db !important;
+  }
+  .dark .ant-select-item-option-active {
+    background: #2d3148 !important;
+  }
+  .dark .ant-select-item-option-selected {
+    background: #3d4566 !important;
+  }
+  .dark .ant-picker-dropdown .ant-picker-panel-container {
+    background: #252840 !important;
+  }
+  .dark .ant-picker-header {
+    color: #e5e7eb !important;
+    border-color: #3d4266 !important;
+  }
+  .dark .ant-picker-content th {
+    color: #9ca3af !important;
+  }
+  .dark .ant-picker-cell {
+    color: #9ca3af !important;
+  }
+  .dark .ant-picker-cell-in-view {
+    color: #e5e7eb !important;
+  }
+  .dark .ant-pagination-item {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+  }
+  .dark .ant-pagination-item a {
+    color: #d1d5db !important;
+  }
+  .dark .ant-pagination-item-active {
+    border-color: #6366f1 !important;
+  }
+  .dark .ant-pagination-prev button,
+  .dark .ant-pagination-next button {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+    color: #d1d5db !important;
+  }
+  .dark .ant-checkbox-inner {
+    background: #252840 !important;
+    border-color: #3d4266 !important;
+  }
+  .dark .ant-table-wrapper .ant-pagination {
+    background: transparent !important;
+  }
 }
 
 @layer utilities {
