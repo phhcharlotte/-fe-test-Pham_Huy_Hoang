@@ -12,19 +12,15 @@ import {
 import {
   DashboardOutlined,
   UnorderedListOutlined,
-  AppstoreOutlined,
   PlusOutlined,
-  BarsOutlined,
-  TableOutlined,
   MoonOutlined,
   SunOutlined,
 } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "./hooks/redux";
 import { selectTaskStats, addTask } from "./stores/TaskSlice";
-import { TaskModal } from "./components/TaskModal";
+import TaskModal from "./components/TaskModal";
 import { useNotify } from "./components/Notification";
 import { useDarkMode } from "./context/DarkModeContext";
-import { useUrlFilters } from "./hooks/useUrlFilters";
 import Dashboard from "./pages/DashboardPage";
 import TaskList from "./pages/TaskList";
 import type { Task } from "./types";
@@ -33,7 +29,7 @@ const { Sider, Header, Content } = Layout;
 
 type Page = "dashboard" | "tasks";
 
-export default function App() {
+function App() {
   const dispatch = useAppDispatch();
   const { notify } = useNotify();
   const { isDark, toggle: toggleDark } = useDarkMode();
@@ -42,13 +38,10 @@ export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Persist filters vào URL query params (2 chiều)
-  useUrlFilters();
-
   const handleSaveNew = (task: Task) => {
     dispatch(addTask(task));
     setShowAddModal(false);
-    notify("✨ Đã tạo task mới");
+    notify(" Đã tạo task mới");
   };
 
   const showAddBtn = page === "tasks";
@@ -77,7 +70,6 @@ export default function App() {
     },
   ];
 
-  // Màu nền sidebar và content theo dark mode
   const sidebarBg = isDark ? "#0f1117" : "#1a1a2e";
   const contentBg = isDark ? "#13151f" : "#f5f5f5";
   const headerBg = isDark ? "#1e2130" : "#ffffff";
@@ -123,26 +115,16 @@ export default function App() {
             overflow: "hidden",
             position: "relative",
           }}>
-          {/* Logo */}
           <div className="flex items-center gap-2.5 px-4 py-[18px] border-b border-white/10">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-extrabold text-base">
-              T
-            </div>
             <div>
               <div className="text-white font-extrabold text-[15px] leading-tight">
                 TaskBoard
-              </div>
-              <div className="text-white/30 text-[9px] font-semibold tracking-widest uppercase">
-                v2.0 Pro
               </div>
             </div>
           </div>
 
           {/* Nav */}
           <div className="px-2 pt-3">
-            <div className="text-[10px] font-bold text-white/25 uppercase tracking-[1.2px] px-3 mb-1">
-              Menu chính
-            </div>
             <Menu
               theme="dark"
               mode="inline"
@@ -151,32 +133,6 @@ export default function App() {
               items={menuItems}
               style={{ background: "transparent", border: "none" }}
             />
-          </div>
-
-          {/* Mini stats */}
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-4 border-t border-white/10">
-            <div className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-2">
-              Thống kê nhanh
-            </div>
-            {(
-              [
-                [" Chờ xử lý", stats.todo, "#e5e7eb"],
-                ["Đang làm", stats.inProgress, "#93c5fd"],
-                ["Hoàn thành", stats.done, "#86efac"],
-                ...(stats.overdue > 0
-                  ? [[" Quá hạn", stats.overdue, "#fca5a5"]]
-                  : []),
-              ] as [string, number, string][]
-            ).map(([label, value, color]) => (
-              <div
-                key={label}
-                className="flex justify-between items-center text-xs text-white/50 mb-1.5">
-                <span>{label}</span>
-                <span className="font-bold" style={{ color }}>
-                  {value}
-                </span>
-              </div>
-            ))}
           </div>
         </Sider>
 
@@ -239,7 +195,6 @@ export default function App() {
                 </div>
               </Tooltip>
 
-              {/* Add task button */}
               {showAddBtn && (
                 <Button
                   type="primary"
@@ -252,7 +207,6 @@ export default function App() {
             </div>
           </Header>
 
-          {/* Page content */}
           <Content
             style={{
               overflow: "auto",
@@ -276,3 +230,5 @@ export default function App() {
     </ConfigProvider>
   );
 }
+
+export default App;

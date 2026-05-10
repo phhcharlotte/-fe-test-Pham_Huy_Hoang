@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Button,
@@ -6,7 +6,6 @@ import {
   Select,
   DatePicker,
   Space,
-  Tag,
   Tooltip,
   Popconfirm,
   Typography,
@@ -32,7 +31,7 @@ import {
   setSortConfig,
 } from "../stores/TaskSlice";
 import { StatusBadge, PriorityBadge } from "../components/ui";
-import { TaskModal } from "../components/TaskModal";
+import TaskModal from "../components/TaskModal";
 import { useNotify } from "../components/Notification";
 import { formatDate, daysDiff } from "../utils/helpers";
 import {
@@ -46,7 +45,7 @@ import type { Task } from "../types";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 
-export default function TaskList() {
+function TaskList() {
   const dispatch = useAppDispatch();
   const { notify } = useNotify();
 
@@ -187,9 +186,6 @@ export default function TaskList() {
               className={`text-xs font-semibold ${isOverdue ? "text-red-500" : isDueSoon ? "text-yellow-500" : "text-gray-600"}`}>
               {formatDate(dueDate)}
             </div>
-            {/* {isOverdue && (
-              <div className="text-xs text-red-400">Trễ {-diff!} ngày</div>
-            )} */}
             {isDueSoon && !isOverdue && (
               <div className="text-xs text-yellow-400">
                 {diff === 0 ? "Hôm nay" : `Còn ${diff} ngày`}
@@ -310,7 +306,6 @@ export default function TaskList() {
         </span>
       </div>
 
-      {/* Bulk bar */}
       {selected.length > 0 && (
         <div className="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5 flex items-center gap-3">
           <Badge count={selected.length} color="#6366f1" />
@@ -335,7 +330,6 @@ export default function TaskList() {
         </div>
       )}
 
-      {/* Table */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <Table
           rowKey="id"
@@ -368,7 +362,6 @@ export default function TaskList() {
           locale={{
             emptyText: (
               <div className="py-12 text-center">
-                <div className="text-4xl mb-3">{hasFilters ? "🔍" : "📭"}</div>
                 <div className="font-semibold text-gray-500 mb-1">
                   {hasFilters ? "Không tìm thấy kết quả" : "Chưa có task nào"}
                 </div>
@@ -396,3 +389,5 @@ export default function TaskList() {
     </div>
   );
 }
+
+export default TaskList;

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Tag, Select } from "antd";
+import { Tag, Select, Avatar as AntAvatar } from "antd";
 import type { TaskStatus, TaskPriority } from "../types";
+import { avatarInitials, avatarColor } from "../utils/helpers";
 import { TAGS_POOL } from "../data/mockData";
 
 const statusMap: Record<TaskStatus, { color: string; label: string }> = {
@@ -50,6 +51,21 @@ export function PriorityBadge({ priority }: { priority: TaskPriority }) {
   return <Tag color={color}>{label}</Tag>;
 }
 
+export function Avatar({ name, size = 26 }: { name: string; size?: number }) {
+  return (
+    <AntAvatar
+      size={size}
+      style={{
+        background: avatarColor(name),
+        fontSize: size * 0.38,
+        fontWeight: 700,
+        flexShrink: 0,
+      }}>
+      {avatarInitials(name)}
+    </AntAvatar>
+  );
+}
+
 export function TagInput({
   value = [],
   onChange,
@@ -65,7 +81,7 @@ export function TagInput({
         placeholder="Thêm tag, nhấn Enter..."
         value={value}
         onChange={onChange}
-        options={TAGS_POOL.map((t) => ({ value: t, label: t }))}
+        options={TAGS_POOL.map((e) => ({ value: e, label: e }))}
         tokenSeparators={[","]}
       />
       <p className="text-xs text-gray-400 mt-1">

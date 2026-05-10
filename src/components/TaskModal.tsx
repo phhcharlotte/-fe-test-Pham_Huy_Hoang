@@ -12,7 +12,7 @@ interface TaskModalProps {
   onSave: (task: Task) => void;
 }
 
-export function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
+function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
   const [form] = Form.useForm();
 
   const handleOk = async () => {
@@ -152,3 +152,5 @@ export function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
     </Modal>
   );
 }
+
+export default TaskModal;

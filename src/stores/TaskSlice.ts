@@ -3,6 +3,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Task, TaskFilters, SortConfig } from "../types";
 import { MOCK_TASKS } from "../data/mockData";
 
+export type LoadingKey =
+  | "filter" // khi thay đổi filter / search / pagination
+  | "addTask" // khi tạo task mới
+  | "updateTask" // khi chỉnh sửa task
+  | "deleteTask" // khi xóa 1 task
+  | "deleteManyTasks" // khi xóa nhiều task
+  | "updateStatus"; // khi đổi status inline
+
 interface TasksState {
   items: Task[];
   filters: TaskFilters;
@@ -11,6 +19,7 @@ interface TasksState {
     pageSize: number;
   };
   sortConfig: SortConfig;
+  loadingKeys: LoadingKey[];
 }
 
 const initialState: TasksState = {
@@ -29,12 +38,21 @@ const initialState: TasksState = {
     key: "createdAt",
     dir: "desc",
   },
+  loadingKeys: [],
 };
 
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
+    startLoading(state, action: PayloadAction<LoadingKey>) {
+      if (!state.loadingKeys.includes(action.payload)) {
+        state.loadingKeys.push(action.payload);
+      }
+    },
+    stopLoading(state, action: PayloadAction<LoadingKey>) {
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== action.payload);
+    },
     addTask(state, action: PayloadAction<Task>) {
       state.items.unshift(action.payload);
       state.pagination.currentPage = 1;
@@ -82,6 +100,8 @@ const tasksSlice = createSlice({
 });
 
 export const {
+  startLoading,
+  stopLoading,
   addTask,
   updateTask,
   deleteTask,
@@ -95,7 +115,6 @@ export const {
 
 export default tasksSlice.reducer;
 
-// ─── Base selectors ──────────────────────────────────────────────────────────
 const selectItems = (state: { tasks: TasksState }) => state.tasks.items;
 const selectFilters = (state: { tasks: TasksState }) => state.tasks.filters;
 const selectPagination = (state: { tasks: TasksState }) =>
@@ -103,7 +122,6 @@ const selectPagination = (state: { tasks: TasksState }) =>
 const selectSortConfig = (state: { tasks: TasksState }) =>
   state.tasks.sortConfig;
 
-// ─── Derived selectors ───────────────────────────────────────────────────────
 export const selectAllTasks = createSelector([selectItems], (items) => [
   ...items,
 ]);
@@ -170,14 +188,14 @@ export const selectTaskStats = createSelector([selectItems], (items) => {
   const today = new Date().toISOString().slice(0, 10);
   return {
     total: items.length,
-    todo: items.filter((t) => t.status === "todo").length,
-    inProgress: items.filter((t) => t.status === "in_progress").length,
-    done: items.filter((t) => t.status === "done").length,
+    todo: items.filter((item) => item.status === "todo").length,
+    inProgress: items.filter((item) => item.status === "in_progress").length,
+    done: items.filter((item) => item.status === "done").length,
     highPriority: items.filter(
-      (t) => t.priority === "high" && t.status !== "done",
+      (item) => item.priority === "high" && item.status !== "done",
     ).length,
     overdue: items.filter(
-      (t) => t.dueDate && t.dueDate < today && t.status !== "done",
+      (item) => item.dueDate && item.dueDate < today && item.status !== "done",
     ).length,
   };
 });
@@ -185,12 +203,6 @@ export const selectTaskStats = createSelector([selectItems], (items) => {
 export const selectRecentTasks = createSelector([selectItems], (items) =>
   [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5),
 );
-
-export const selectKanbanTasks = createSelector([selectItems], (items) => ({
-  todo: items.filter((t) => t.status === "todo"),
-  in_progress: items.filter((t) => t.status === "in_progress"),
-  done: items.filter((t) => t.status === "done"),
-}));
 
 export const selectPaginationInfo = selectPagination;
 export const selectFiltersState = selectFilters;

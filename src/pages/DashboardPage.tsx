@@ -2,7 +2,12 @@ import React from "react";
 import { useAppSelector } from "../hooks/redux";
 import { Card, Statistic, Alert, Row, Col, Typography } from "antd";
 import { selectTaskStats, selectRecentTasks } from "../stores/TaskSlice";
-import { StatusBadge, PriorityBadge } from "../components/ui";
+import { StatusBadge, PriorityBadge, Avatar } from "../components/ui";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
 
 function Dashboard() {
   const stats = useAppSelector(selectTaskStats);
@@ -97,11 +102,13 @@ function Dashboard() {
                               ? "#e6f4ff"
                               : "#f5f5f5",
                       }}>
-                      {recent.status === "done"
-                        ? "✅"
-                        : recent.status === "in_progress"
-                          ? "🔄"
-                          : "⏳"}
+                      {recent.status === "done" ? (
+                        <CheckCircleOutlined />
+                      ) : recent.status === "in_progress" ? (
+                        <ReloadOutlined />
+                      ) : (
+                        <ClockCircleOutlined />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-gray-900 truncate mb-1">
@@ -110,6 +117,9 @@ function Dashboard() {
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <StatusBadge status={recent.status} />
                         <PriorityBadge priority={recent.priority} />
+                        {recent.assignee && (
+                          <Avatar name={recent.assignee} size={18} />
+                        )}
                       </div>
                     </div>
                   </div>

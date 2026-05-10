@@ -22,13 +22,11 @@ const STORAGE_KEY = "taskboard-dark-mode";
 
 export function DarkModeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState<boolean>(() => {
-    // Ưu tiên: localStorage → system preference
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored !== null) return stored === "true";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
-  // Apply class lên <html> để Tailwind dark: variants hoạt động
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {

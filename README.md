@@ -87,7 +87,7 @@ src/
 
 ## Tính năng
 
-- **Dashboard**: 4 stat cards, donut chart, recent tasks, biểu đồ ưu tiên, task theo thành viên
+- **Dashboard**: 4 stat cards, recent tasks
 - **Danh sách task**: table phân trang, sort 3 cột, inline status change, bulk delete
 - **Tìm kiếm & lọc**: debounce search, multi-select status, filter priority, date range picker
 - **CRUD**: Modal thêm/sửa với validation, confirm trước khi xóa
