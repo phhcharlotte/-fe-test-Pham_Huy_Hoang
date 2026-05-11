@@ -100,7 +100,6 @@ function App() {
         },
       }}>
       <Layout style={{ height: "100vh", overflow: "hidden" }}>
-        {/* ── Sidebar ── */}
         <Sider
           width={240}
           style={{
@@ -116,7 +115,6 @@ function App() {
             </div>
           </div>
 
-          {/* Nav */}
           <div className="px-2 pt-3">
             <Menu
               theme="dark"
@@ -129,9 +127,7 @@ function App() {
           </div>
         </Sider>
 
-        {/* ── Main ── */}
         <Layout style={{ background: contentBg }}>
-          {/* Topbar */}
           <Header
             style={{
               background: headerBg,
@@ -153,7 +149,6 @@ function App() {
             </h1>
 
             <div className="flex items-center gap-2">
-              {/* Dark mode toggle */}
               <Tooltip
                 title={
                   isDark ? "Chuyển sang Light mode" : "Chuyển sang Dark mode"

@@ -31,14 +31,13 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
       });
       form.resetFields();
     } catch {
-      // validation error — không làm gì
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (submitting) return; // chặn đóng khi đang submit
+    if (submitting) return;
     form.resetFields();
     onClose();
   };
@@ -97,7 +96,7 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
         <Form.Item name="description" label="Mô tả">
           <Input.TextArea
             rows={3}
-            placeholder="Mô tả chi tiết công việc cần làm..."
+            placeholder="Mô tả chi tiết ..."
             style={{ resize: "vertical" }}
           />
         </Form.Item>
@@ -109,6 +108,8 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
               label="Trạng thái"
               rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}>
               <Select
+                allowClear
+                placeholder="Chọn trạng thái"
                 options={[
                   { value: "todo", label: "Chờ xử lý" },
                   { value: "in_progress", label: "Đang làm" },
@@ -123,6 +124,8 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
               label="Độ ưu tiên"
               rules={[{ required: true, message: "Vui lòng chọn độ ưu tiên" }]}>
               <Select
+                allowClear
+                placeholder="Chọn độ ưu tiên"
                 options={[
                   { value: "high", label: "Cao" },
                   { value: "medium", label: "Trung bình" },
@@ -138,7 +141,7 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
             <Form.Item name="assignee" label="Người được giao">
               <Select
                 allowClear
-                placeholder="— Chưa giao —"
+                placeholder="Chưa giao"
                 options={USERS.map((user) => ({ value: user, label: user }))}
               />
             </Form.Item>
@@ -157,7 +160,7 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
         <Form.Item name="tags" label="Tags">
           <Select
             mode="tags"
-            placeholder="Thêm tag, nhấn Enter hoặc chọn gợi ý..."
+            placeholder="Thêm tag hoặc chọn gợi ý..."
             options={TAGS_POOL.map((tag) => ({ value: tag, label: tag }))}
             tokenSeparators={[","]}
           />

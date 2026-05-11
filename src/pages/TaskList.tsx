@@ -68,9 +68,8 @@ function TaskList() {
     if (debouncedSearch !== filters.searchText) {
       dispatch(startLoading("filter"));
     }
-    // setFilter reducer tự stopLoading("filter") bên trong
     dispatch(setFilter({ searchText: debouncedSearch }));
-  }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
   const handleSave = async (task: Task) => {
     if (modal === "new") {
@@ -250,7 +249,6 @@ function TaskList() {
 
   return (
     <div className="space-y-3">
-      {/* Filters bar */}
       <div className="bg-white rounded-xl border border-gray-100 px-4 py-3 flex flex-wrap gap-2 items-center">
         <Input.Search
           placeholder="Tìm kiếm tiêu đề, mô tả, tags..."

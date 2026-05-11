@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppSelector } from "../hooks/redux";
-import { Card, Statistic, Alert, Row, Col, Typography } from "antd";
+import { Card, Statistic, Row, Col, Typography } from "antd";
 import { selectTaskStats, selectRecentTasks } from "../stores/TaskSlice";
 import { StatusBadge, PriorityBadge, Avatar } from "../components/ui";
 import {
@@ -8,6 +8,7 @@ import {
   ClockCircleOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
+import { daysDiff, formatDate } from "../utils/helpers";
 
 function Dashboard() {
   const stats = useAppSelector(selectTaskStats);
@@ -46,15 +47,6 @@ function Dashboard() {
 
   return (
     <div className="space-y-4">
-      {stats.overdue > 0 && (
-        <Alert
-          type="error"
-          showIcon
-          description={`${stats.overdue} task đã quá hạn! Cần xử lý ngay.`}
-          className="rounded-xl"
-        />
-      )}
-
       <Row gutter={[14, 14]}>
         {statCards.map((s) => (
           <Col xs={24} sm={12} lg={6} key={s.label}>
@@ -88,6 +80,7 @@ function Dashboard() {
             className="h-full">
             <div className="space-y-3">
               {recents.map((recent, index) => {
+                const diff = daysDiff(recent.dueDate);
                 return (
                   <div
                     key={recent.id}
@@ -122,6 +115,12 @@ function Dashboard() {
                         )}
                       </div>
                     </div>
+                    {recent.dueDate && diff !== null && (
+                      <span
+                        className={`text-xs font-semibold flex-shrink-0 ${diff < 0 ? "text-red-500" : diff <= 3 ? "text-yellow-500" : "text-gray-400"}`}>
+                        {formatDate(recent.dueDate)}
+                      </span>
+                    )}
                   </div>
                 );
               })}

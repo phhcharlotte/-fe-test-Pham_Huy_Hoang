@@ -65,28 +65,3 @@ export function Avatar({ name, size = 26 }: { name: string; size?: number }) {
     </AntAvatar>
   );
 }
-
-export function TagInput({
-  value = [],
-  onChange,
-}: {
-  value?: string[];
-  onChange: (tags: string[]) => void;
-}) {
-  return (
-    <div>
-      <Select
-        mode="tags"
-        style={{ width: "100%" }}
-        placeholder="Thêm tag, nhấn Enter..."
-        value={value}
-        onChange={onChange}
-        options={TAGS_POOL.map((e) => ({ value: e, label: e }))}
-        tokenSeparators={[","]}
-      />
-      <p className="text-xs text-gray-400 mt-1">
-        Nhập tag và nhấn Enter, hoặc chọn từ gợi ý
-      </p>
-    </div>
-  );
-}
