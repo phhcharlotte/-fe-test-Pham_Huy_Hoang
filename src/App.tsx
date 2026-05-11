@@ -33,7 +33,6 @@ function App() {
   const dispatch = useAppDispatch();
   const { notify } = useNotify();
   const { isDark, toggle: toggleDark } = useDarkMode();
-  const stats = useAppSelector(selectTaskStats);
 
   const [page, setPage] = useState<Page>("dashboard");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -59,12 +58,6 @@ function App() {
       label: (
         <span className="flex items-center justify-between w-full">
           Danh sách Task
-          <Badge
-            count={stats.total}
-            color="#6366f1"
-            size="small"
-            style={{ marginLeft: 6 }}
-          />
         </span>
       ),
     },

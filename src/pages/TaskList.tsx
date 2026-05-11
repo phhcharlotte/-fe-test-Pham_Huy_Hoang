@@ -10,16 +10,18 @@ import {
   Popconfirm,
   Typography,
   Badge,
+  Spin,
 } from "antd";
 import type { TableProps } from "antd";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { useDebounce } from "../hooks/useDebounce";
+import { useLoading } from "../hooks/useLoading";
 import {
   selectFilteredTasks,
   selectFiltersState,
   selectPaginationInfo,
-  selectSortState,
+  selectIsLoading,
   addTask,
   updateTask,
   deleteTask,
@@ -29,6 +31,7 @@ import {
   resetFilters,
   setPage,
   setSortConfig,
+  startLoading,
 } from "../stores/TaskSlice";
 import { StatusBadge, PriorityBadge } from "../components/ui";
 import TaskModal from "../components/TaskModal";
@@ -39,6 +42,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   ReloadOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import type { Task } from "../types";
 
@@ -48,11 +52,12 @@ const { Text } = Typography;
 function TaskList() {
   const dispatch = useAppDispatch();
   const { notify } = useNotify();
+  const { withLoading } = useLoading();
 
   const filteredTasks = useAppSelector(selectFilteredTasks);
   const pagination = useAppSelector(selectPaginationInfo);
   const filters = useAppSelector(selectFiltersState);
-  const sortConfig = useAppSelector(selectSortState);
+  const isFilterLoading = useAppSelector(selectIsLoading("filter"));
 
   const [modal, setModal] = useState<"new" | Task | null>(null);
   const [selected, setSelected] = useState<React.Key[]>([]);
@@ -60,29 +65,57 @@ function TaskList() {
   const debouncedSearch = useDebounce(searchInput, 300);
 
   useEffect(() => {
+    if (debouncedSearch !== filters.searchText) {
+      dispatch(startLoading("filter"));
+    }
+    // setFilter reducer tự stopLoading("filter") bên trong
     dispatch(setFilter({ searchText: debouncedSearch }));
-  }, [debouncedSearch, dispatch]);
+  }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSave = (task: Task) => {
+  const handleSave = async (task: Task) => {
     if (modal === "new") {
-      dispatch(addTask(task));
+      await withLoading("addTask", () => dispatch(addTask(task)));
       notify(" Đã tạo task mới");
     } else {
-      dispatch(updateTask(task));
+      await withLoading("updateTask", () => dispatch(updateTask(task)));
       notify(" Đã cập nhật task");
     }
     setModal(null);
   };
 
-  const handleDelete = (id: string) => {
-    dispatch(deleteTask(id));
+  const handleDelete = async (id: string) => {
+    await withLoading("deleteTask", () => dispatch(deleteTask(id)));
     notify("Đã xóa task", "error");
   };
 
-  const handleBulkDelete = () => {
-    dispatch(deleteManyTasks(selected as string[]));
+  const handleBulkDelete = async () => {
+    await withLoading("deleteManyTasks", () =>
+      dispatch(deleteManyTasks(selected as string[])),
+    );
     notify(`Đã xóa ${selected.length} task`, "error");
     setSelected([]);
+  };
+
+  const handleStatusChange = async (id: string, status: Task["status"]) => {
+    await withLoading("updateStatus", () =>
+      dispatch(updateTaskStatus({ id, status })),
+    );
+  };
+
+  const handleFilterChange = (partial: Parameters<typeof setFilter>[0]) => {
+    dispatch(startLoading("filter"));
+    dispatch(setFilter(partial));
+  };
+
+  const handlePageChange = (page: number) => {
+    dispatch(startLoading("filter"));
+    dispatch(setPage(page));
+  };
+
+  const handleReset = () => {
+    dispatch(startLoading("filter"));
+    dispatch(resetFilters());
+    setSearchInput("");
   };
 
   const hasFilters =
@@ -96,13 +129,7 @@ function TaskList() {
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
-      sorter: true,
-      sortOrder:
-        sortConfig.key === "title"
-          ? sortConfig.dir === "asc"
-            ? "ascend"
-            : "descend"
-          : null,
+      sorter: (a, b) => a.title.localeCompare(b.title),
       render: (title: string, record) => (
         <div>
           <div className="font-semibold text-gray-900 text-sm">{title}</div>
@@ -123,9 +150,7 @@ function TaskList() {
         <StatusBadge
           status={status}
           editable
-          onChange={(s) =>
-            dispatch(updateTaskStatus({ id: record.id, status: s }))
-          }
+          onChange={(s) => handleStatusChange(record.id, s)}
         />
       ),
     },
@@ -134,13 +159,10 @@ function TaskList() {
       dataIndex: "priority",
       key: "priority",
       width: 130,
-      sorter: true,
-      sortOrder:
-        sortConfig.key === "priority"
-          ? sortConfig.dir === "asc"
-            ? "ascend"
-            : "descend"
-          : null,
+      sorter: (a, b) => {
+        const m: Record<string, number> = { high: 3, medium: 2, low: 1 };
+        return (m[a.priority] ?? 0) - (m[b.priority] ?? 0);
+      },
       render: (priority: Task["priority"]) => (
         <PriorityBadge priority={priority} />
       ),
@@ -166,13 +188,7 @@ function TaskList() {
       dataIndex: "dueDate",
       key: "dueDate",
       width: 130,
-      sorter: true,
-      sortOrder:
-        sortConfig.key === "dueDate"
-          ? sortConfig.dir === "asc"
-            ? "ascend"
-            : "descend"
-          : null,
+      sorter: (a, b) => (a.dueDate ?? "").localeCompare(b.dueDate ?? ""),
       render: (dueDate?: string, record?) => {
         if (!dueDate) return <Text type="secondary">—</Text>;
         const diff = daysDiff(dueDate);
@@ -242,18 +258,35 @@ function TaskList() {
           onChange={(e) => setSearchInput(e.target.value)}
           onSearch={(v) => {
             setSearchInput(v);
-            dispatch(setFilter({ searchText: v }));
+            handleFilterChange({ searchText: v });
           }}
           allowClear
+          onClear={() => {
+            setSearchInput("");
+            handleFilterChange({ searchText: "" });
+          }}
           style={{ width: 240 }}
-          prefix={<SearchOutlined className="text-gray-400" />}
+          prefix={
+            isFilterLoading ? (
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    spin
+                    style={{ fontSize: 12, color: "#6366f1" }}
+                  />
+                }
+              />
+            ) : (
+              <SearchOutlined className="text-gray-400" />
+            )
+          }
         />
 
         <Select
           mode="multiple"
           placeholder="Trạng thái"
           value={filters.status}
-          onChange={(v) => dispatch(setFilter({ status: v }))}
+          onChange={(v) => handleFilterChange({ status: v })}
           style={{ minWidth: 160 }}
           options={[
             { value: "todo", label: " Chờ xử lý" },
@@ -266,7 +299,7 @@ function TaskList() {
         <Select
           placeholder="Độ ưu tiên"
           value={filters.priority || undefined}
-          onChange={(v) => dispatch(setFilter({ priority: v ?? "" }))}
+          onChange={(v) => handleFilterChange({ priority: v ?? "" })}
           allowClear
           style={{ width: 150 }}
           options={[
@@ -285,23 +318,28 @@ function TaskList() {
               : null
           }
           onChange={(_, strs) =>
-            dispatch(setFilter({ dateRange: strs as [string, string] }))
+            handleFilterChange({ dateRange: strs as [string, string] })
           }
           style={{ width: 240 }}
         />
 
         {hasFilters && (
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              dispatch(resetFilters());
-              setSearchInput("");
-            }}>
+          <Button icon={<ReloadOutlined />} onClick={handleReset}>
             Reset
           </Button>
         )}
 
-        <span className="ml-auto text-xs text-gray-400">
+        <span className="ml-auto text-xs text-gray-400 flex items-center gap-1.5">
+          {isFilterLoading && (
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  spin
+                  style={{ fontSize: 11, color: "#6366f1" }}
+                />
+              }
+            />
+          )}
           {filteredTasks.length} kết quả
         </span>
       </div>
@@ -357,7 +395,7 @@ function TaskList() {
             showTotal: (total, range) =>
               `${range[0]}-${range[1]} / ${total} task`,
             showSizeChanger: false,
-            onChange: (page) => dispatch(setPage(page)),
+            onChange: handlePageChange,
           }}
           locale={{
             emptyText: (

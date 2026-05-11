@@ -57,7 +57,7 @@ function Dashboard() {
 
       <Row gutter={[14, 14]}>
         {statCards.map((s) => (
-          <Col span={6} key={s.label}>
+          <Col xs={24} sm={12} lg={6} key={s.label}>
             <Card
               className="relative overflow-hidden"
               styles={{ body: { padding: "20px" } }}>
@@ -82,7 +82,7 @@ function Dashboard() {
       </Row>
 
       <Row gutter={[14, 14]}>
-        <Col span={12}>
+        <Col xs={24} sm={12} lg={12}>
           <Card
             title={<span className="font-bold"> 5 task tạo gần nhất</span>}
             className="h-full">

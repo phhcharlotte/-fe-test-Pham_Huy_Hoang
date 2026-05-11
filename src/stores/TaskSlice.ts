@@ -56,19 +56,25 @@ const tasksSlice = createSlice({
     addTask(state, action: PayloadAction<Task>) {
       state.items.unshift(action.payload);
       state.pagination.currentPage = 1;
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== "addTask");
     },
     updateTask(state, action: PayloadAction<Partial<Task> & { id: string }>) {
       const index = state.items.findIndex((t) => t.id === action.payload.id);
       if (index >= 0) {
         state.items[index] = { ...state.items[index], ...action.payload };
       }
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== "updateTask");
     },
     deleteTask(state, action: PayloadAction<string>) {
       state.items = state.items.filter((t) => t.id !== action.payload);
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== "deleteTask");
     },
     deleteManyTasks(state, action: PayloadAction<string[]>) {
       const ids = new Set(action.payload);
       state.items = state.items.filter((t) => !ids.has(t.id));
+      state.loadingKeys = state.loadingKeys.filter(
+        (k) => k !== "deleteManyTasks",
+      );
     },
     updateTaskStatus(
       state,
@@ -76,6 +82,7 @@ const tasksSlice = createSlice({
     ) {
       const task = state.items.find((t) => t.id === action.payload.id);
       if (task) task.status = action.payload.status;
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== "updateStatus");
     },
     setFilter(state, action: PayloadAction<Partial<TaskFilters>>) {
       Object.assign(state.filters, action.payload);
@@ -89,9 +96,11 @@ const tasksSlice = createSlice({
         dateRange: ["", ""],
       };
       state.pagination.currentPage = 1;
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== "filter");
     },
     setPage(state, action: PayloadAction<number>) {
       state.pagination.currentPage = action.payload;
+      state.loadingKeys = state.loadingKeys.filter((k) => k !== "filter");
     },
     setSortConfig(state, action: PayloadAction<SortConfig>) {
       state.sortConfig = action.payload;
@@ -121,6 +130,16 @@ const selectPagination = (state: { tasks: TasksState }) =>
   state.tasks.pagination;
 const selectSortConfig = (state: { tasks: TasksState }) =>
   state.tasks.sortConfig;
+const selectLoadingKeys = (state: { tasks: TasksState }) =>
+  state.tasks.loadingKeys;
+
+export const selectIsLoading = (key: LoadingKey) =>
+  createSelector([selectLoadingKeys], (keys) => keys.includes(key));
+
+export const selectAnyLoading = createSelector(
+  [selectLoadingKeys],
+  (keys) => keys.length > 0,
+);
 
 export const selectAllTasks = createSelector([selectItems], (items) => [
   ...items,
@@ -206,4 +225,3 @@ export const selectRecentTasks = createSelector([selectItems], (items) =>
 
 export const selectPaginationInfo = selectPagination;
 export const selectFiltersState = selectFilters;
-export const selectSortState = selectSortConfig;

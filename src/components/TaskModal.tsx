@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Select, DatePicker, Row, Col } from "antd";
 import dayjs from "dayjs";
 import type { Task } from "../types";
@@ -9,16 +9,18 @@ interface TaskModalProps {
   task: Task | null;
   open: boolean;
   onClose: () => void;
-  onSave: (task: Task) => void;
+  onSave: (task: Task) => Promise<void> | void;
 }
 
 function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
   const [form] = Form.useForm();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      onSave({
+      setSubmitting(true);
+      await onSave({
         ...values,
         dueDate: values.dueDate
           ? values.dueDate.format("YYYY-MM-DD")
@@ -28,10 +30,15 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
         createdAt: task?.createdAt ?? new Date().toISOString(),
       });
       form.resetFields();
-    } catch {}
+    } catch {
+      // validation error — không làm gì
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
+    if (submitting) return; // chặn đóng khi đang submit
     form.resetFields();
     onClose();
   };
@@ -50,16 +57,19 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
     <Modal
       title={
         <span className="text-base font-extrabold">
-          {task ? " Chỉnh sửa task" : " Thêm task mới"}
+          {task ? "Chỉnh sửa task" : "Thêm task mới"}
         </span>
       }
       open={open}
       onOk={handleOk}
       onCancel={handleCancel}
-      okText={task ? " Lưu thay đổi" : " Tạo task"}
+      okText={task ? "Lưu thay đổi" : "Tạo task"}
       cancelText="Hủy bỏ"
       width={600}
+      confirmLoading={submitting}
       okButtonProps={{
+        loading: submitting,
+        disabled: submitting,
         style: {
           background: "#6366f1",
           borderColor: "#6366f1",
@@ -67,7 +77,11 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
           fontWeight: 700,
         },
       }}
-      cancelButtonProps={{ style: { borderRadius: 8, fontWeight: 600 } }}
+      cancelButtonProps={{
+        style: { borderRadius: 8, fontWeight: 600 },
+        disabled: submitting,
+      }}
+      maskClosable={!submitting}
       destroyOnHidden>
       <Form form={form} layout="vertical" className="mt-4">
         <Form.Item
@@ -96,9 +110,9 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
               rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}>
               <Select
                 options={[
-                  { value: "todo", label: " Chờ xử lý" },
-                  { value: "in_progress", label: " Đang làm" },
-                  { value: "done", label: " Hoàn thành" },
+                  { value: "todo", label: "Chờ xử lý" },
+                  { value: "in_progress", label: "Đang làm" },
+                  { value: "done", label: "Hoàn thành" },
                 ]}
               />
             </Form.Item>
@@ -110,9 +124,9 @@ function TaskModal({ task, open, onClose, onSave }: TaskModalProps) {
               rules={[{ required: true, message: "Vui lòng chọn độ ưu tiên" }]}>
               <Select
                 options={[
-                  { value: "high", label: " Cao" },
-                  { value: "medium", label: " Trung bình" },
-                  { value: "low", label: " Thấp" },
+                  { value: "high", label: "Cao" },
+                  { value: "medium", label: "Trung bình" },
+                  { value: "low", label: "Thấp" },
                 ]}
               />
             </Form.Item>
